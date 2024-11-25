@@ -1,0 +1,6 @@
+string prompt                    # prompt   
+sensor_msgs/Image image          # image for VLMs
+---
+Response response                # final response
+---
+PartialResponse partial_response  # partial response
