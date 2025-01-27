@@ -6,7 +6,7 @@ from llm_action_interfaces.msg import Response, PartialResponse
 
 
 
-class FibonacciActionClient(Node):
+class LLamaIndexActionClient(Node):
 
     def __init__(self):
         super().__init__('llm_action_client')
@@ -45,7 +45,7 @@ class FibonacciActionClient(Node):
 def main(args=None):
     rclpy.init(args=args)
 
-    action_client = FibonacciActionClient()
+    action_client = LLamaIndexActionClient()
     prompt = action_client.get_parameter('prompt').get_parameter_value().string_value
     action_client.send_goal(prompt)
     rclpy.spin(action_client)
