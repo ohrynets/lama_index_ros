@@ -1,6 +1,10 @@
 from setuptools import find_packages, setup
+from glob import glob
+import os
 
 package_name = 'llm_action'
+# Use glob to include all files from the 'templates' directory
+prompts_files = glob('templates/*')
 
 setup(
     name=package_name,
@@ -10,6 +14,7 @@ setup(
         ('share/ament_index/resource_index/packages',
             ['resource/' + package_name]),
         ('share/' + package_name, ['package.xml']),
+        (os.path.join('share', package_name, 'templates') , prompts_files),
     ],
     install_requires=['setuptools'],
     zip_safe=True,
@@ -22,6 +27,7 @@ setup(
         'console_scripts': [
             'llm_action_node = llm_action.llm_action_server:main',
             'llm_action_client = llm_action.llm_action_client:main',
+            'llm_intent_ident_node = llm_action.llm_intent_ident_node:main',
         ],
     },
 )

@@ -116,8 +116,8 @@ class QueryEngineActionServer(Node):
         self.declare_parameter('ollama_model',"llama3.1:8b")
         self.ollama_model = self.get_parameter('ollama_model').get_parameter_value().string_value
         
-        logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)
-        logging.getLogger().addHandler(logging.StreamHandler(stream=sys.stdout))
+        #logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)
+        #logging.getLogger().addHandler(logging.StreamHandler(stream=sys.stdout))
         llama_debug = LlamaDebugHandler(print_trace_on_end=True)
         callback_manager = CallbackManager([llama_debug])
         self.llm: MultiModalLLM = FixedOllamaMultiModal(model=self.ollama_model,
