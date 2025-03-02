@@ -1,5 +1,6 @@
-string prompt                    # prompt   
-sensor_msgs/Image image          # image for VLMs
+string prompt                    # prompt
+string original_message          # original message
+sensor_msgs/Image[] images       # image for VLMs
 ---
 Response response                # final response
 ---

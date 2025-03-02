@@ -26,8 +26,11 @@ setup(
     entry_points={
         'console_scripts': [
             'llm_action_node = llm_action.llm_action_server:main',
+            'llm_light_action_node = llm_action.llm_action_server_light_llm:main',
+            'llm_vision_action_node = llm_action.llm_action_server_vision_llm:main',
             'llm_action_client = llm_action.llm_action_client:main',
             'llm_intent_ident_node = llm_action.llm_intent_ident_node:main',
+            'llm_vision_processor_node = llm_action.llm_vision_processor_node:main',
         ],
     },
 )

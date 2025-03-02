@@ -40,7 +40,7 @@ from llm_action.prompt_processor import PromptProcessor
            
 def main():
     rclpy.init()
-    llama_node = PromptProcessor(node_name="llm_intent_ident_node")
+    llama_node = PromptProcessor(node_name="llm_vision_processor_node")
     rclpy.spin(llama_node)
     llama_node.destroy_node()
     rclpy.shutdown()

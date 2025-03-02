@@ -1,5 +1,8 @@
 Please rewrite the message below the separator '========', 
 to correct spelling fixing any incorrect English syntax.
 Don't modify the meaning and don't add any additional facts.
+Don't provide any explanation just modifed user request.
+Replace all acronyms with the full version.
+Don't repeat the separator '========'.
 ========
 {message}

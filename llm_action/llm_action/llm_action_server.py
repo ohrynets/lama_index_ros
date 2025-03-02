@@ -102,18 +102,19 @@ class FixedOllamaMultiModal(OllamaMultiModal):
       
 class QueryEngineActionServer(Node):
 
-    def __init__(self):
-        nest_asyncio.apply()
-        super().__init__('llm_action_server')
+    def __init__(self, node_name: str = 'llm_action_server',
+                 action_name:str = 'llm_action', default_llm: str = 'ollama3.1:8b') -> None:
+        super().__init__(node_name)
         self._action_server = ActionServer(
             self,
             QueryEngine,
-            'llm_action',
+            action_name,
             self.execute_callback)
+        nest_asyncio.apply()
         self.tools = LamaIndexToRosTools()
         self.declare_parameter('ollama_url',"http://host.docker.internal:11434")
         self.ollama_url = self.get_parameter('ollama_url').get_parameter_value().string_value
-        self.declare_parameter('ollama_model',"llama3.1:8b")
+        self.declare_parameter('ollama_model', default_llm)
         self.ollama_model = self.get_parameter('ollama_model').get_parameter_value().string_value
         
         #logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)
@@ -125,27 +126,19 @@ class QueryEngineActionServer(Node):
                                                    base_url=self.ollama_url, 
                                                    verbose=True,
                                                    num_ctx=1024,)
-        self.get_logger().info(f"LLM Action Server started with model: {self.ollama_model} and url: {self.ollama_url}")
+        
+        self.get_logger().info(f"LLM Action Server '{bool(self._action_server)}' started with model: {self.ollama_model} and url: {self.ollama_url}")
         #self.llm = Ollama(model=self.ollama_model, request_timeout=120.0, base_url=self.ollama_url, verbose=True)
 
     def execute_callback(self, goal_handle):
         self.get_logger().info(f"Executing goal on {self.ollama_url}...")
-        input_msg = [ChatMessage.from_str(goal_handle.request.prompt)]
         feedback_msg = QueryEngine.Feedback()
         feedback_msg.partial_response = PartialResponse()
         feedback_msg.partial_response.text = "" 
         self.get_logger().info(f'Goal:{goal_handle.request.prompt}')        
-        if goal_handle.request.image and goal_handle.request.image.data:
-            self.get_logger().info(f'Prompt:{goal_handle.request.prompt} with an image')
-            image_nodes = self.tools.ros2_to_image_document(goal_handle.request.image)
-            # opencv_img = self.bridge.imgmsg_to_cv2(goal_handle.request.image, "bgr8")
-            # # Convert from BGR (OpenCV) to RGB (PIL) color space
-            # rgb_image = cv2.cvtColor(opencv_img, cv2.COLOR_BGR2RGB)
-
-            # # Convert to PIL Image
-            # pil_image = Image.fromarray(rgb_image)
-            # b64_img = img_2_b64(pil_image)
-            # image_nodes = [ImageDocument(image=b64_img, mimetype="jpeg")]
+        if len(goal_handle.request.images) > 0:
+            self.get_logger().info(f'Prompt:{goal_handle.request.prompt} : with an image')
+            image_nodes = self.tools.ros2_to_image_document(goal_handle.request.images)
             output = self.llm.complete(prompt=goal_handle.request.prompt, image_documents=image_nodes)
         else:
             self.get_logger().info(f'Prompt:{goal_handle.request.prompt}')
@@ -159,7 +152,8 @@ class QueryEngineActionServer(Node):
         goal_handle.succeed()
 
         result = QueryEngine.Result()
-        result.response
+        result.response.original_message = goal_handle.request.original_message
+        result.response.original_images = goal_handle.request.images
         result.response.text = output.text
         return result
 

@@ -11,14 +11,16 @@ class LamaIndexToRosTools():
     def __init__(self) -> None:
         self.bridge = CvBridge()
         
-    def ros2_to_image_document(self, input_image:Image) -> List[ImageDocument]:  
-        opencv_img = self.bridge.imgmsg_to_cv2(input_image, "bgr8")
-        # Convert from BGR (OpenCV) to RGB (PIL) color space
-        rgb_image = cv2.cvtColor(opencv_img, cv2.COLOR_BGR2RGB)
+    def ros2_to_image_document(self, input_images: List[Image]) -> List[ImageDocument]:  
+        image_nodes = []
+        for input_image in input_images:
+            opencv_img = self.bridge.imgmsg_to_cv2(input_image, "bgr8")
+            # Convert from BGR (OpenCV) to RGB (PIL) color space
+            rgb_image = cv2.cvtColor(opencv_img, cv2.COLOR_BGR2RGB)
 
-        # Convert to PIL Image
-        pil_image = PILImage.fromarray(rgb_image)
-        b64_img = img_2_b64(pil_image)
-        image_nodes = [ImageDocument(image=b64_img, mimetype="jpeg")]
+            # Convert to PIL Image
+            pil_image = PILImage.fromarray(rgb_image)
+            b64_img = img_2_b64(pil_image)
+            image_nodes.append(ImageDocument(image=b64_img, mimetype="jpeg"))
         return image_nodes
     
